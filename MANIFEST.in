@@ -1,2 +1,3 @@
-include MANIFEST.in Makefile README.rst LICENSE
+include MANIFEST.in README.rst LICENSE
 recursive-include blogdown/templates *
+

@@ -2,9 +2,10 @@ from setuptools import setup
 
 setup(
     name='blogdown',
-    version='1.1',
+    version='1.1.2',
     author='Brant Young',
     author_email='brant.young@gmail.com',
+    include_package_data = True,
     packages=['blogdown', 'blogdown.modules'],
     description='a simple static blog generator',
     long_description=open('README.rst').read(),
