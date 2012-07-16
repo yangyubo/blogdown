@@ -163,7 +163,7 @@ class BuildError(ValueError):
 
 
 class Builder(object):
-    default_ignores = ('.*', '_*', 'config.yml', 'Makefile', 'README', '*.conf', )
+    default_ignores = ('.*', '_*', 'config.yml', 'Makefile', 'README.rst', '*.conf', )
     default_programs = {
         '*.rst':    'rst',
         '*.md':    'md'
