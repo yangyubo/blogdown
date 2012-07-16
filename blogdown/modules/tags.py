@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.modules.tags
+    blogdown.modules.tags
     ~~~~~~~~~~~~~~~~~~~~
 
     Implements tagging.
@@ -15,7 +15,7 @@ from jinja2 import contextfunction
 
 from werkzeug.contrib.atom import AtomFeed
 
-from rstblog.signals import after_file_published, \
+from blogdown.signals import after_file_published, \
      before_build_finished
 
 

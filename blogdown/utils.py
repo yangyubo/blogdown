@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.utils
-    ~~~~~~~~~~~~~
+    blogdown.utils
+    ~~~~~~~~~~~~~~
 
     Various utilities.
 

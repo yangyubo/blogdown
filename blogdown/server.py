@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.server
-    ~~~~~~~~~~~~~~
+    blogdown.server
+    ~~~~~~~~~~~~~~~
 
     Development server that rebuilds automatically
 

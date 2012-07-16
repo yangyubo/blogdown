@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.signals
-    ~~~~~~~~~~~~~~~
+    blogdown.signals
+    ~~~~~~~~~~~~~~~~
 
     Blinker signals for the modules and other hooks.
 

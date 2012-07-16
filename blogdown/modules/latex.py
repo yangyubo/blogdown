@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.modules.latex
-    ~~~~~~~~~~~~~~~~~~~~~
+    blogdown.modules.latex
+    ~~~~~~~~~~~~~~~~~~~~~~
 
     Simple latex support for formulas.
 

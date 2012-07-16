@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.cli
-    ~~~~~~~~~~~
+    blogdown.cli
+    ~~~~~~~~~~~~
 
     The command line interface
 
@@ -11,8 +11,8 @@
 from __future__ import with_statement
 import sys
 import os
-from rstblog.config import Config
-from rstblog.builder import Builder
+from blogdown.config import Config
+from blogdown.builder import Builder
 
 
 def get_builder(project_folder):
@@ -29,7 +29,7 @@ def get_builder(project_folder):
 def main():
     """Entrypoint for the console script."""
     if len(sys.argv) not in (1, 2, 3):
-        print >> sys.stderr, 'usage: rstblog <action> <folder>'
+        print >> sys.stderr, 'usage: blogdown <action> <folder>'
     if len(sys.argv) >= 2:
         action = sys.argv[1]
     else:

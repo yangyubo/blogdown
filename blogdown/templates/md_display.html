@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}{{ md.title }}{% endblock %}
+{% block body %}
+  {%- if not config.hide_title %}
+  <h1 class="title">
+  {{ md.html_title }}
+  {%- endif %}
+  </h1>
+  {% if ctx.pub_date %}
+  <p class=date>written on {{ format_date(ctx.pub_date, format='full') }}
+  {% endif %}
+
+  {{ md.fragment }}
+
+  {% if ctx.tags %}
+  <p class=tags>This entry was tagged
+    {% for tag in ctx.tags|sort(case_sensitive=true) %}
+      {%- if not loop.first and not loop.last %}, {% endif -%}
+      {%- if loop.last and not loop.first %} and {% endif %}
+      <a href="{{ link_to('tag', tag=tag) }}">{{ tag }}</a>
+    {%- endfor %}
+  {% endif %}
+
+  {% if 'disqus' in config.active_modules %}
+    {{ get_disqus() }}
+  {% endif %}
+{% endblock %}

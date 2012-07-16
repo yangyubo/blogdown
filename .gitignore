@@ -10,3 +10,4 @@ eggs
 parts
 .DS_Store
 .installed.cfg
+sample/

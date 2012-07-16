@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.modules
+    blogdown.modules
     ~~~~~~~~~~~~~~~
 
     The module interface.
@@ -19,6 +19,6 @@ def add_module_path(folder):
 def find_module(name):
     """Returns the module by the given name or raises an ImportError."""
     import sys
-    full_name = 'rstblog.modules.' + name
+    full_name = 'blogdown.modules.' + name
     __import__(full_name)
     return sys.modules[full_name]

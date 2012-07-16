@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.builder
-    ~~~~~~~~~~~~~~~
+    blogdown.builder
+    ~~~~~~~~~~~~~~~~
 
     The building components.
 
@@ -14,25 +14,24 @@ import posixpath
 from fnmatch import fnmatch
 from urlparse import urlparse
 
-from docutils.core import publish_parts
-
-from jinja2 import Environment, FileSystemLoader, Markup
+from jinja2 import Environment, FileSystemLoader
 
 from babel import Locale, dates
 
 from werkzeug.routing import Map, Rule
 from werkzeug import url_unquote
 
-from rstblog.signals import before_file_processed, \
+from blogdown.signals import before_file_processed, \
      before_template_rendered, before_build_finished, \
      before_file_built, after_file_prepared, \
      after_file_published
-from rstblog.modules import find_module
-from rstblog.programs import RSTProgram, CopyProgram
+from blogdown.modules import find_module
+from blogdown.programs import MDProgram, RSTProgram, CopyProgram
 
 
 OUTPUT_FOLDER = '_build'
 builtin_programs = {
+    'md':      MDProgram,
     'rst':      RSTProgram,
     'copy':     CopyProgram
 }
@@ -130,27 +129,14 @@ class Context(object):
             real_context.update(context)
         return self.builder.render_template(template_name, real_context)
 
-    def render_rst(self, contents):
-        settings = {
-            'initial_header_level': self.config.get('rst_header_level', 2),
-            'rstblog_context':      self
-        }
-        parts = publish_parts(source=contents,
-                              writer_name='html4css1',
-                              settings_overrides=settings)
-        return {
-            'title':        Markup(parts['title']).striptags(),
-            'html_title':   Markup(parts['html_title']),
-            'fragment':     Markup(parts['fragment'])
-        }
-
     def render_contents(self):
         return self.program.render_contents()
 
     def render_summary(self):
         if not self.summary:
             return u''
-        return self.render_rst(self.summary)['fragment']
+
+        return self.program.render(self.summary)
 
     def add_stylesheet(self, href, type=None, media=None):
         if type is None:
@@ -179,7 +165,8 @@ class BuildError(ValueError):
 class Builder(object):
     default_ignores = ('.*', '_*', 'config.yml', 'Makefile', 'README', '*.conf', )
     default_programs = {
-        '*.rst':    'rst'
+        '*.rst':    'rst',
+        '*.md':    'md'
     }
     default_template_path = '_templates'
     default_static_folder = 'static'
@@ -203,7 +190,7 @@ class Builder(object):
         self.locale = Locale(self.config.root_get('locale') or 'en')
         self.jinja_env = Environment(
             loader=FileSystemLoader([template_path, builtin_templates]),
-            autoescape=self.config.root_get('template_autoescape', True),
+            autoescape=self.config.root_get('template_autoescape', False),
             extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_'],
         )
         self.jinja_env.globals.update(
@@ -341,7 +328,7 @@ class Builder(object):
         before_build_finished.send(self)
 
     def debug_serve(self, host='127.0.0.1', port=5000):
-        from rstblog.server import Server
+        from blogdown.server import Server
         print 'Serving on http://%s:%d/' % (host, port)
         try:
             Server(host, port, self).serve_forever()

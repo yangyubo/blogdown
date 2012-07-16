@@ -1,15 +1,15 @@
 from setuptools import setup
 
 setup(
-    name='rstblog',
+    name='blogdown',
     version='1.0',
-    author='Armin Ronacher <armin.ronacher@active-4.com>',
-    packages=['rstblog', 'rstblog.modules'],
+    author='Brant Young <brant.young@gmail.com>',
+    packages=['blogdown', 'blogdown.modules'],
     description='',
     long_description='',
     license='BSD License',
     entry_points = {
-        'console_scripts': ['run-rstblog = rstblog.cli:main'],
+        'console_scripts': ['run-blogdown = blogdown.cli:main'],
     },
-    install_requires=['PyYAML', 'Babel', 'blinker', 'docutils', 'Jinja2>=2.4', 'Werkzeug']
+    install_requires=['PyYAML', 'Babel', 'blinker', 'Markdown', 'Jinja2>=2.4', 'Werkzeug', 'docutils']
 )

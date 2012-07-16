@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.modules.blog
-    ~~~~~~~~~~~~~~~~~~~~
+    blogdown.modules.blog
+    ~~~~~~~~~~~~~~~~~~~~~
 
     The blog component.
 
@@ -18,9 +18,9 @@ from jinja2 import contextfunction
 from werkzeug.routing import Rule, Map, NotFound
 from werkzeug.contrib.atom import AtomFeed
 
-from rstblog.signals import after_file_published, \
+from blogdown.signals import after_file_published, \
      before_build_finished
-from rstblog.utils import Pagination
+from blogdown.utils import Pagination
 
 
 class MonthArchive(object):

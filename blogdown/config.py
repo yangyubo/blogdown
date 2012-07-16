@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.config
-    ~~~~~~~~~~~~~~
+    blogdown.config
+    ~~~~~~~~~~~~~~~
 
     Holds the configuration and can read it from another file.
 

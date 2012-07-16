@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    rstblog.modules.disqus
-    ~~~~~~~~~~~~~~~~~~~~~~
+    blogdown.modules.disqus
+    ~~~~~~~~~~~~~~~~~~~~~~~
 
     Implements disqus element if asked for.
     
