@@ -22,7 +22,7 @@ from blogdown.signals import after_file_published, \
 class Tag(object):
 
     def __init__(self, name, count):
-        self.name = name
+        self.name = name.lower()
         self.count = count
         self.size = 100 + log(count or 1) * 20
 
@@ -62,7 +62,7 @@ def remember_tags(context):
     by_file[context.source_filename] = tags
     by_tag = storage.setdefault('by_tag', {})
     for tag in tags:
-        by_tag.setdefault(tag, []).append(context)
+        by_tag.setdefault(tag.lower(), []).append(context)
     context.tags = frozenset(tags)
 
 

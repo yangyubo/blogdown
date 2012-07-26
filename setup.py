@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='blogdown',
-    version='1.1.2',
+    version='1.1.3',
     author='Brant Young',
     author_email='brant.young@gmail.com',
     include_package_data = True,
