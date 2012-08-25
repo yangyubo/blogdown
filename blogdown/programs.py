@@ -187,7 +187,8 @@ class MDProgram(TemplatedProgram):
                 'tables',
                 'abbr',
                 'meta',
-                'headerid'
+                'headerid',
+                'codehilite(pygments_style=tango, css_class=syntax, guess_lang=True'
             ]
         )
 
