@@ -52,7 +52,7 @@ def write_stylesheet(builder, **kwargs):
 def setup(builder):
     global html_formatter
     style = get_style_by_name(builder.config.root_get('modules.pygments.style'))
-    html_formatter = HtmlFormatter(style=style)
+    html_formatter = HtmlFormatter(style=style, cssclass='hll')
     directives.register_directive('code-block', CodeBlock)
     directives.register_directive('sourcecode', CodeBlock)
     before_file_processed.connect(inject_stylesheet)
