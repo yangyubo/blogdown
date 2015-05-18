@@ -25,8 +25,8 @@ from blogdown.signals import before_file_processed, \
      before_template_rendered, before_build_finished, \
      before_file_built, after_file_prepared, \
      after_file_published
-from blogdown.modules import find_module
 from blogdown.programs import MDProgram, RSTProgram, CopyProgram
+from blogdown import plugin
 
 
 OUTPUT_FOLDER = '_build'
@@ -203,10 +203,23 @@ class Builder(object):
         self.static_folder = self.config.root_get('static_folder') or \
                              self.default_static_folder
 
+        # The order is chosen on purpose to allow overriding:
+        # local configuration > 3rdparty entrypoints > blogdown default
+        plugin_loader = plugin.MultiLoader(
+            [plugin.PathLoader(path)
+             for path in self.config.get('plugin_folders', ['_plugins'])] +
+            [plugin.EntryPointLoader('blogdown.plugin'),
+             plugin.PackageLoader('blogdown.modules')])
+
         for module in self.config.root_get('active_modules') or []:
-            mod = find_module(module)
-            mod.setup(self)
-            self.modules.append(mod)
+            implementations = iter(plugin_loader(module))
+            try:
+                plugin_instance = next(implementations)
+            except StopIteration:
+                raise RuntimeError("Plugin {0!r} not found.".format(module))
+            plugin_instance(self)
+            self.modules.append(plugin_instance)
+            # TODO: warn about further implementations being ignored?
 
     @property
     def default_output_folder(self):
