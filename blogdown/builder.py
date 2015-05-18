@@ -205,7 +205,7 @@ class Builder(object):
 
         # The order is chosen on purpose to allow overriding:
         # local configuration > 3rdparty entrypoints > blogdown default
-        plugin_loader = plugin.MultiLoader(
+        plugin_loader = plugin.ChainLoader(
             [plugin.PathLoader(path)
              for path in self.config.get('plugin_folders', ['_plugins'])] +
             [plugin.EntryPointLoader('blogdown.plugin'),

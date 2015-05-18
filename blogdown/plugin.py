@@ -18,7 +18,8 @@ from runpy import run_path
 __all__ = [
     'EntryPointLoader',
     'PathLoader',
-    'MultiLoader',
+    'PackageLoader',
+    'ChainLoader',
 ]
 
 
@@ -76,7 +77,7 @@ class PackageLoader:
                 .format(module))
 
 
-class MultiLoader:
+class ChainLoader:
 
     """Load plugins from all of the sub-loaders."""
 
