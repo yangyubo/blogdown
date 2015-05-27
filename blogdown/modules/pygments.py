@@ -24,20 +24,42 @@ from pygments.styles import get_style_by_name
 html_formatter = None
 
 
+def get_formatter_options(options):
+    linenos = ('linenos' in options or
+               'lineno-start' in options or
+               'lineno-step' in options)
+    return {
+        'linenos': 1 if linenos else 0,
+        'linenostart': options.get('lineno-start', 1),
+        'linenostep': options.get('lineno-step', 1),
+    }
+
+
+def format_code(directive, formatter, code):
+    try:
+        lexer = get_lexer_by_name(directive.arguments[0])
+    except ValueError:
+        lexer = TextLexer()
+    for k, v in get_formatter_options(directive.options).items():
+        setattr(formatter, k, v)
+    formatted = highlight(code, lexer, formatter)
+    return [nodes.raw('', formatted, format='html')]
+
+
 class CodeBlock(Directive):
     has_content = True
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = False
+    option_spec = {
+        'linenos': directives.flag,
+        'lineno-start': int,
+        'lineno-step': directives.positive_int,
+    }
 
     def run(self):
-        try:
-            lexer = get_lexer_by_name(self.arguments[0])
-        except ValueError:
-            lexer = TextLexer()
         code = u'\n'.join(self.content)
-        formatted = highlight(code, lexer, html_formatter)
-        return [nodes.raw('', formatted, format='html')]
+        return format_code(self, html_formatter, code)
 
 
 def inject_stylesheet(context, **kwargs):
