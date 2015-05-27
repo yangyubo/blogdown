@@ -9,6 +9,10 @@
     :license: BSD, see LICENSE for more details.
 """
 from __future__ import absolute_import
+
+import io
+import os
+
 from blogdown.signals import before_file_processed, \
      before_build_finished
 
@@ -43,30 +47,33 @@ def parselinenos(spec):
         raise ValueError('invalid line number spec: %r' % spec)
 
 
+def get_linenos(options):
+    return ('linenos' in options or
+            'lineno-start' in options or
+            'lineno-step' in options)
+
+
 def get_formatter_options(options):
-    linenos = ('linenos' in options or
-               'lineno-start' in options or
-               'lineno-step' in options)
     return {
-        'linenos': 1 if linenos else 0,
+        'linenos': 1 if get_linenos(options) else 0,
         'linenostart': options.get('lineno-start', 1),
         'linenostep': options.get('lineno-step', 1),
         'hl_lines': parselinenos(options.get('emphasize-lines')),
     }
 
 
-def format_code(directive, formatter, code):
+def format_code(options, formatter, code, language):
     try:
-        lexer = get_lexer_by_name(directive.arguments[0])
+        lexer = get_lexer_by_name(language)
     except ValueError:
         lexer = TextLexer()
-    fmt_opt = get_formatter_options(directive.options)
+    fmt_opt = get_formatter_options(options)
     for k, v in fmt_opt.items():
         setattr(formatter, k, v)
     formatted = highlight(code, lexer, formatter)
     literal_block = nodes.raw('', formatted, format='html')
     linenos = fmt_opt['linenos']
-    caption = directive.options.get('caption')
+    caption = options.get('caption')
     classes = [
         'literal-block-wrapper',
         'with_linenos' if linenos else 'without_linenos',
@@ -93,8 +100,46 @@ class CodeBlock(Directive):
     }
 
     def run(self):
+        language = self.arguments[0]
         code = u'\n'.join(self.content)
-        return format_code(self, html_formatter, code)
+        return format_code(self.options, html_formatter, code, language)
+
+
+class LiteralInclude(CodeBlock):
+
+    option_spec = CodeBlock.option_spec.copy()
+    option_spec.update({
+        'caption': directives.unchanged,
+        'language': directives.unchanged_required,
+        'encoding': directives.encoding,
+        'lines': directives.unchanged_required,
+    })
+
+    def read_file(self, filename, encoding):
+        context = self.state.document.settings.rstblog_context
+        dirname = os.path.dirname(context.full_source_filename)
+        fullpath = os.path.join(dirname, filename)
+        with io.open(fullpath, 'rt', encoding=encoding) as f:
+            return list(f)
+
+    def run(self):
+        options = self.options.copy()
+        language = options.get('language')
+        encoding = options.get('encoding', 'utf-8')
+        filename = self.arguments[0]
+        lines = self.read_file(filename, encoding)
+        cut = options.get('lines')
+        if cut:
+            start, stop = cut.split('-')
+            start = int(start) if start else 0
+            stop = int(stop)+1 if stop else -1
+            lines = lines[start:stop]
+            if get_linenos(options) and not options.get('lineno-start'):
+                options['lineno-start'] = start
+        if 'caption' in options and not options['caption']:
+            options['caption'] = os.path.basename(filename)
+        code = "".join(lines)
+        return format_code(options, html_formatter, code, language)
 
 
 def inject_stylesheet(context, **kwargs):
@@ -112,5 +157,6 @@ def setup(builder):
     html_formatter = HtmlFormatter(style=style, cssclass='hll')
     directives.register_directive('code-block', CodeBlock)
     directives.register_directive('sourcecode', CodeBlock)
+    directives.register_directive('literalinclude', LiteralInclude)
     before_file_processed.connect(inject_stylesheet)
     before_build_finished.connect(write_stylesheet)
