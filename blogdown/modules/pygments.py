@@ -24,6 +24,25 @@ from pygments.styles import get_style_by_name
 html_formatter = None
 
 
+def _range(start, stop=None):
+    return range(int(start), int(start if stop is None else stop)+1)
+
+def _parserange(expr):
+    return list(_range(*expr.strip().split('-')))
+
+
+def parselinenos(spec):
+    """Parse a line number spec (such as "1,2,4-6") and return a list of
+    wanted line numbers.
+    """
+    if spec is None:
+        return list()
+    try:
+        return sum(map(_parserange, spec.split(',')), [])
+    except (ValueError, TypeError):
+        raise ValueError('invalid line number spec: %r' % spec)
+
+
 def get_formatter_options(options):
     linenos = ('linenos' in options or
                'lineno-start' in options or
@@ -32,6 +51,7 @@ def get_formatter_options(options):
         'linenos': 1 if linenos else 0,
         'linenostart': options.get('lineno-start', 1),
         'linenostep': options.get('lineno-step', 1),
+        'hl_lines': parselinenos(options.get('emphasize-lines')),
     }
 
 
@@ -69,6 +89,7 @@ class CodeBlock(Directive):
         'lineno-start': int,
         'lineno-step': directives.positive_int,
         'caption': directives.unchanged_required,
+        'emphasize-lines': directives.unchanged_required,
     }
 
     def run(self):
