@@ -21,6 +21,7 @@ setup(
         'Markdown',
         'Jinja2>=2.4',
         'Werkzeug',
-        'docutils'
+        'docutils',
+        'pygments',
     ]
 )
