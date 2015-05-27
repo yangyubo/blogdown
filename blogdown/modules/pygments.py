@@ -131,8 +131,8 @@ class LiteralInclude(CodeBlock):
         cut = options.get('lines')
         if cut:
             start, stop = cut.split('-')
-            start = int(start) if start else 0
-            stop = int(stop)+1 if stop else -1
+            start = int(start)-1 if start else None
+            stop = int(stop) if stop else None
             lines = lines[start:stop]
             if get_linenos(options) and not options.get('lineno-start'):
                 options['lineno-start'] = start
