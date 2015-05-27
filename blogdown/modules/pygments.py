@@ -40,10 +40,23 @@ def format_code(directive, formatter, code):
         lexer = get_lexer_by_name(directive.arguments[0])
     except ValueError:
         lexer = TextLexer()
-    for k, v in get_formatter_options(directive.options).items():
+    fmt_opt = get_formatter_options(directive.options)
+    for k, v in fmt_opt.items():
         setattr(formatter, k, v)
     formatted = highlight(code, lexer, formatter)
-    return [nodes.raw('', formatted, format='html')]
+    literal_block = nodes.raw('', formatted, format='html')
+    linenos = fmt_opt['linenos']
+    caption = directive.options.get('caption')
+    classes = [
+        'literal-block-wrapper',
+        'with_linenos' if linenos else 'without_linenos',
+        'with_caption' if caption else 'without_caption',
+    ]
+    container = nodes.container('', literal_block=True, classes=classes)
+    if caption:
+        container += nodes.caption(caption, '', nodes.Text(caption))
+    container += literal_block
+    return [container]
 
 
 class CodeBlock(Directive):
@@ -55,6 +68,7 @@ class CodeBlock(Directive):
         'linenos': directives.flag,
         'lineno-start': int,
         'lineno-step': directives.positive_int,
+        'caption': directives.unchanged_required,
     }
 
     def run(self):
