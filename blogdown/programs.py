@@ -75,22 +75,44 @@ class TemplatedProgram(Program):
             f.write(rv.encode('utf-8') + '\n')
 
 
+def iter_header_lines(lines):
+    """
+    Iterate lines in the header.
+
+    If header starts with '---' it must also end with that. Otherwise it can
+    end with a blank line or '---'.
+    """
+    line = next(lines)
+    doc_sep = line == '---'
+    if not doc_sep:
+        yield line
+    for line in lines:
+        if line == '---' or (not doc_sep and not line):
+            return
+        yield line
+
+
+def parse_header_lines(lines):
+    """
+    Extract header lines and return parsed as YAML.
+
+    :param lines: should be an iterator or file-like object.
+    """
+    lines = iter_header_lines(l.rstrip('\n') for l in lines)
+    return yaml.load('\n'.join(lines))
+
+
 class RSTProgram(TemplatedProgram):
     """A program that renders an rst file into a template"""
     default_template = 'rst_display.html'
     _fragment_cache = None
 
     def prepare(self):
-        headers = ['---']
+        headers = []
         with self.context.open_source_file() as f:
-            for line in f:
-                line = line.rstrip()
-                if not line:
-                    break
-                headers.append(line)
+            cfg = parse_header_lines(f)
             title = self.parse_text_title(f)
 
-        cfg = yaml.load('\n'.join(headers))
         if cfg:
             if not isinstance(cfg, dict):
                 raise ValueError('expected dict config in file "%s", got: %.40r' \
