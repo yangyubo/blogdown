@@ -14,7 +14,6 @@ import os
 import yaml
 import shutil
 from datetime import datetime
-from StringIO import StringIO
 from weakref import ref
 from jinja2 import Markup
 
@@ -91,7 +90,7 @@ class RSTProgram(TemplatedProgram):
                 headers.append(line)
             title = self.parse_text_title(f)
 
-        cfg = yaml.load(StringIO('\n'.join(headers)))
+        cfg = yaml.load('\n'.join(headers))
         if cfg:
             if not isinstance(cfg, dict):
                 raise ValueError('expected dict config in file "%s", got: %.40r' \
