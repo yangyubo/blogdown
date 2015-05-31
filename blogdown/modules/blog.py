@@ -72,11 +72,13 @@ def process_blog_entry(context):
             if rv is not None:
                 context.pub_date = datetime(*rv)
 
-    if context.pub_date is not None:
-        context.builder.get_storage('blog') \
-            .setdefault(context.pub_date.year, {}) \
-            .setdefault(('0%d' % context.pub_date.month)[-2:], []) \
-            .append(context)
+    if context.pub_date is None or context.title is None:
+        return
+
+    context.builder.get_storage('blog') \
+        .setdefault(context.pub_date.year, {}) \
+        .setdefault(('0%d' % context.pub_date.month)[-2:], []) \
+        .append(context)
 
 
 def get_all_entries(builder):

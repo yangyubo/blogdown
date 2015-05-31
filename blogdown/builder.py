@@ -45,7 +45,7 @@ class Context(object):
     def __init__(self, builder, config, source_filename, prepare=False):
         self.builder = builder
         self.config = config
-        self.title = 'Untitled'
+        self.title = None
         self.summary = None
         self.pub_date = None
         self.source_filename = source_filename
