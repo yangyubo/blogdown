@@ -14,7 +14,7 @@ import posixpath
 from fnmatch import fnmatch
 from urlparse import urlparse
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
 from babel import Locale, dates
 
@@ -287,12 +287,24 @@ class Builder(object):
                 return program_name
         return 'copy'
 
+    def get_template(self, template_name):
+        """Get jinja template. ``template_name`` can either be a single name
+        string or a list of names."""
+        if not isinstance(template_name, list):
+            template_name = [template_name]
+        for name in template_name:
+            try:
+                return self.jinja_env.get_template(name)
+            except TemplateNotFound:
+                pass
+        raise TemplateNotFound(template_name)
+
     def render_template(self, template_name, context=None):
         if context is None:
             context = {}
         context['builder'] = self
         context.setdefault('config', self.config)
-        tmpl = self.jinja_env.get_template(template_name)
+        tmpl = self.get_template(template_name)
         before_template_rendered.send(tmpl, context=context)
         return tmpl.render(context)
 

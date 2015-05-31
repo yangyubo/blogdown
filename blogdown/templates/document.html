@@ -1,16 +1,14 @@
 {% extends "layout.html" %}
-{% block title %}{{ md.title }}{% endblock %}
+{% block title %}{{ document.title }}{% endblock %}
 {% block body %}
   {%- if not config.hide_title %}
-  <h1 class="title">
-  {{ md.html_title }}
+  {{ document.html_title }}
   {%- endif %}
-  </h1>
   {% if ctx.pub_date %}
   <p class=date>written on {{ format_date(ctx.pub_date, format='full') }}
   {% endif %}
 
-  {{ md.fragment }}
+  {{ document.fragment }}
 
   {% if ctx.tags %}
   <p class=tags>This entry was tagged

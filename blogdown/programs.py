@@ -104,7 +104,7 @@ def parse_header_lines(lines):
 
 class RSTProgram(TemplatedProgram):
     """A program that renders an rst file into a template"""
-    default_template = 'rst_display.html'
+    default_template = ['document.html', 'rst_display.html']
     _fragment_cache = None
 
     def prepare(self):
@@ -186,12 +186,12 @@ class RSTProgram(TemplatedProgram):
 
     def get_template_context(self):
         ctx = TemplatedProgram.get_template_context(self)
-        ctx['rst'] = self.get_fragments()
+        ctx['document'] = ctx['rst'] = self.get_fragments()
         return ctx
 
 class MDProgram(TemplatedProgram):
     """A program that renders an rst file into a template"""
-    default_template = 'md_display.html'
+    default_template = ['document.html', 'md_display.html']
 
     def __init__(self, context):
         from markdown import Markdown
@@ -223,7 +223,8 @@ class MDProgram(TemplatedProgram):
 
         self.context.config = self.context.config.add_from_dict(self.md.Meta)
         self.contents['fragment'] = parsed
-        self.contents['html_title'] = self.contents['title'] = self.context.title = u' '.join(self.md.Meta.get('title', u''))
+        self.contents['title'] = self.context.title = u' '.join(self.md.Meta.get('title', u''))
+        self.contents['html_title'] = '<h1>' + self.context.title + '</h1>'
         self.contents['summary'] = self.context.summary = u' '.join(self.md.Meta.get('summary', u''))
 
     def render(self, contents):
@@ -235,5 +236,5 @@ class MDProgram(TemplatedProgram):
 
     def get_template_context(self):
         ctx = TemplatedProgram.get_template_context(self)
-        ctx['md'] = self.contents
+        ctx['document'] = ctx['md'] = self.contents
         return ctx
