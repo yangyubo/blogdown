@@ -10,6 +10,7 @@
     :license: BSD, see LICENSE for more details.
 """
 from __future__ import with_statement
+from __future__ import unicode_literals
 import os
 import yaml
 import shutil
@@ -72,7 +73,7 @@ class TemplatedProgram(Program):
         context = self.get_template_context()
         rv = self.context.render_template(template_name, context)
         with self.context.open_destination_file() as f:
-            f.write(rv.encode('utf-8') + '\n')
+            f.write(rv + '\n')
 
 
 def iter_header_lines(lines):
@@ -148,7 +149,7 @@ class RSTProgram(TemplatedProgram):
             if not line:
                 break
             buffer.append(line)
-        return self.render_rst('\n'.join(buffer).decode('utf-8')).get('title')
+        return self.render_rst('\n'.join(buffer)).get('title')
 
     def get_fragments(self):
         if self._fragment_cache is not None:
@@ -156,7 +157,7 @@ class RSTProgram(TemplatedProgram):
         with self.context.open_source_file() as f:
             while f.readline().strip():
                 pass
-            rv = self.render_rst(f.read().decode('utf-8'))
+            rv = self.render_rst(f.read())
         self._fragment_cache = rv
         return rv
 
@@ -219,7 +220,7 @@ class MDProgram(TemplatedProgram):
 
     def prepare(self):
         with self.context.open_source_file() as f:
-            parsed = self.md.convert(f.read().decode('utf-8'))
+            parsed = self.md.convert(f.read())
 
         self.context.config = self.context.config.add_from_dict(self.md.Meta)
         self.contents['fragment'] = parsed

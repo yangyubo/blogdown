@@ -15,6 +15,8 @@
     :copyright: (c) 2012 by Martin Andrews.
     :license: BSD, see LICENSE for more details.
 """
+from __future__ import unicode_literals
+
 import jinja2
 
 @jinja2.contextfunction
@@ -45,7 +47,7 @@ def get_disqus(context):
     if not context['config'].get('disqus', True):
         disqus_txt='' # "<h1>DISQUS DEFEATED</h1>"
         
-    return jinja2.Markup(disqus_txt.encode('utf-8'))
+    return jinja2.Markup(disqus_txt)
 
 
 def setup(builder):
