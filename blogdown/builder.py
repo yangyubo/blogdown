@@ -8,11 +8,15 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+from __future__ import print_function
+from __future__ import unicode_literals
+import io
 import re
 import os
 import posixpath
 from fnmatch import fnmatch
-from urlparse import urlparse
+import six
+urlparse = six.moves.urllib.parse.urlparse
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -27,6 +31,7 @@ from blogdown.signals import before_file_processed, \
      after_file_published
 from blogdown.programs import MDProgram, RSTProgram, CopyProgram
 from blogdown import plugin
+
 
 
 OUTPUT_FOLDER = '_build'
@@ -86,11 +91,11 @@ class Context(object):
             os.makedirs(folder)
 
     def open_source_file(self, mode='r'):
-        return open(self.full_source_filename, mode)
+        return io.open(self.full_source_filename, mode, encoding='utf-8')
 
     def open_destination_file(self, mode='w'):
         self.make_destination_folder()
-        return open(self.full_destination_filename, mode)
+        return io.open(self.full_destination_filename, mode, encoding='utf-8')
 
     @property
     def destination_folder(self):
@@ -231,7 +236,7 @@ class Builder(object):
         return self.url_adapter.build(_key, values)
 
     def get_link_filename(self, _key, **values):
-        link = url_unquote(self.link_to(_key, **values).lstrip('/')).encode('utf-8')
+        link = url_unquote(self.link_to(_key, **values).lstrip('/'))
         if not link or link.endswith('/'):
             link += 'index.html'
         return os.path.join(self.default_output_folder, link)
@@ -241,7 +246,7 @@ class Builder(object):
         folder = os.path.dirname(filename)
         if not os.path.isdir(folder):
             os.makedirs(folder)
-        return open(filename, mode)
+        return io.open(filename, mode, encoding='utf-8')
 
     def register_url(self, key, rule=None, config_key=None,
                      config_default=None, **extra):
@@ -261,7 +266,7 @@ class Builder(object):
         folder = os.path.dirname(full_filename)
         if not os.path.isdir(folder):
             os.makedirs(folder)
-        return open(full_filename, mode)
+        return io.open(full_filename, mode, encoding='utf-8')
 
     def get_storage(self, module):
         return self.storage.setdefault(module, {})
@@ -282,7 +287,7 @@ class Builder(object):
 
     def guess_program(self, config, filename):
         mapping = config.list_entries('programs') or self.default_programs
-        for pattern, program_name in mapping.iteritems():
+        for pattern, program_name in mapping.items():
             if fnmatch(filename, pattern):
                 return program_name
         return 'copy'
@@ -312,7 +317,7 @@ class Builder(object):
             local_config = last_config
             local_config_filename = os.path.join(dirpath, 'config.yml')
             if os.path.isfile(local_config_filename):
-                with open(local_config_filename) as f:
+                with io.open(local_config_filename) as f:
                     local_config = last_config.add_from_file(f)
 
             dirnames[:] = self.filter_files(dirnames, local_config)
@@ -336,13 +341,13 @@ class Builder(object):
             if context.needs_build:
                 key = context.is_new and 'A' or 'U'
                 context.run()
-                print key, context.source_filename
+                print(key, context.source_filename)
 
         before_build_finished.send(self)
 
     def debug_serve(self, host='127.0.0.1', port=5000):
         from blogdown.server import Server
-        print 'Serving on http://%s:%d/' % (host, port)
+        print('Serving on http://%s:%d/' % (host, port))
         try:
             Server(host, port, self).serve_forever()
         except KeyboardInterrupt:

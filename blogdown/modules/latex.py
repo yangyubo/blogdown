@@ -8,6 +8,8 @@
     :copyright: (c) 2010 by Armin Ronacher, Georg Brandl.
     :license: BSD, see LICENSE for more details.
 """
+from __future__ import unicode_literals
+
 import os
 import re
 import tempfile
@@ -56,7 +58,7 @@ def find_depth(stdout):
 
 
 def render_math(context, math):
-    relname = '_math/%s.png' % sha1(math.encode('utf-8')).hexdigest()
+    relname = u'_math/%s.png' % sha1(math).hexdigest()
     full_filename = context.builder.get_full_static_filename(relname)
     url = context.builder.get_static_url(relname)
 
@@ -71,7 +73,7 @@ def render_math(context, math):
     tempdir = tempfile.mkdtemp()
     try:
         tf = open(path.join(tempdir, 'math.tex'), 'w')
-        tf.write(latex.encode('utf-8'))
+        tf.write(latex)
         tf.close()
 
         # build latex command; old versions of latex don't have the

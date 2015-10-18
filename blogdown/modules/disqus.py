@@ -15,6 +15,8 @@
     :copyright: (c) 2012 by Martin Andrews.
     :license: BSD, see LICENSE for more details.
 """
+from __future__ import unicode_literals
+
 import jinja2
 
 @jinja2.contextfunction

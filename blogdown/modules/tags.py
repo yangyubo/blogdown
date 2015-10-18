@@ -8,8 +8,12 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+from __future__ import unicode_literals
+
 from math import log
-from urlparse import urljoin
+
+import six
+urljoin = six.moves.urllib.parse.urljoin
 
 from jinja2 import contextfunction
 
@@ -41,7 +45,7 @@ def get_tag_summary(builder):
     storage = builder.get_storage('tags')
     by_tag = storage.get('by_tag', {})
     result = []
-    for tag, tagged in by_tag.iteritems():
+    for tag, tagged in by_tag.items():
         result.append(Tag(tag, len(tagged)))
     result.sort(key=lambda x: x.count)
     return result
@@ -69,7 +73,7 @@ def remember_tags(context):
 def write_tagcloud_page(builder):
     with builder.open_link_file('tagcloud') as f:
         rv = builder.render_template('tagcloud.html')
-        f.write(rv.encode('utf-8') + '\n')
+        f.write(rv + '\n')
 
 
 def write_tag_feed(builder, tag):
@@ -82,12 +86,12 @@ def write_tag_feed(builder, tag):
                     feed_url=urljoin(url, builder.link_to('blog_feed')),
                     url=url)
     for entry in get_tagged_entries(builder, tag)[:10]:
-        feed.add(entry.title, unicode(entry.render_contents()),
+        feed.add(entry.title, six.text_type(entry.render_contents()),
                  content_type='html', author=blog_author,
                  url=urljoin(url, entry.slug),
                  updated=entry.pub_date)
     with builder.open_link_file('tagfeed', tag=tag.name) as f:
-        f.write(feed.to_string().encode('utf-8') + '\n')
+        f.write(feed.to_string() + '\n')
 
 
 def write_tag_page(builder, tag):
@@ -98,7 +102,7 @@ def write_tag_page(builder, tag):
             'tag':      tag,
             'entries':  entries
         })
-        f.write(rv.encode('utf-8') + '\n')
+        f.write(rv + '\n')
 
 
 def write_tag_files(builder):
