@@ -5,7 +5,7 @@
   {{ rst.html_title }}
   {%- endif %}
   {% if ctx.pub_date %}
-  <p class=date>written on {{ format_date(ctx.pub_date, format='full') }}
+  <p class=date>published on {{ format_date(ctx.pub_date, format='full') }}
   {% endif %}
 
   {{ rst.fragment }}
