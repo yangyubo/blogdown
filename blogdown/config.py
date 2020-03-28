@@ -82,7 +82,7 @@ class Config(object):
         """Returns a new config from this config with another layer added
         from a given config file.
         """
-        d = yaml.load(fd)
+        d = yaml.unsafe_load(fd)
         if not d:
             return
         if not isinstance(d, dict):

@@ -100,7 +100,7 @@ def parse_header_lines(lines):
     :param lines: should be an iterator or file-like object.
     """
     lines = iter_header_lines(l.rstrip('\n') for l in lines)
-    return yaml.load('\n'.join(lines))
+    return yaml.unsafe_load('\n'.join(lines))
 
 
 class RSTProgram(TemplatedProgram):
