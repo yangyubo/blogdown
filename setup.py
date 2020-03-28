@@ -20,7 +20,7 @@ setup(
         'blinker',
         'Markdown',
         'Jinja2>=2.4',
-        'Werkzeug',
+        'Werkzeug<1.0.0',
         'docutils',
         'pygments',
         'six',
