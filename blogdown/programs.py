@@ -109,7 +109,6 @@ class RSTProgram(TemplatedProgram):
     _fragment_cache = None
 
     def prepare(self):
-        headers = []
         with self.context.open_source_file() as f:
             cfg = parse_header_lines(f)
             title = self.parse_text_title(f)
