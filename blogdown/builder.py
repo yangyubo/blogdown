@@ -23,7 +23,7 @@ from jinja2 import Environment, FileSystemLoader
 from babel import Locale, dates
 
 from werkzeug.routing import Map, Rule
-from werkzeug import url_unquote
+from werkzeug.urls import url_unquote
 
 from blogdown.signals import before_file_processed, \
      before_template_rendered, before_build_finished, \
@@ -195,8 +195,6 @@ class Builder(object):
         self.locale = Locale(self.config.root_get('locale') or 'en')
         self.jinja_env = Environment(
             loader=FileSystemLoader([template_path, builtin_templates]),
-            autoescape=self.config.root_get('template_autoescape', False),
-            extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_'],
         )
         self.jinja_env.globals.update(
             link_to=self.link_to,

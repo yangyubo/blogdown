@@ -5,13 +5,13 @@ setup(
     version='1.3.0',
     author='Blogdown Team',
     author_email='yang@yangyubo.com',
-    include_package_data = True,
+    include_package_data=True,
     packages=['blogdown', 'blogdown.modules'],
     description='a simple static blog generator',
     long_description=open('README.rst').read(),
     license='BSD License',
     url='https://github.com/blogdown/blogdown/',
-    entry_points = {
+    entry_points={
         'console_scripts': ['run-blogdown = blogdown.cli:main'],
     },
     install_requires=[
@@ -19,10 +19,12 @@ setup(
         'Babel',
         'blinker',
         'Markdown',
-        'Jinja2>=2.4',
-        'Werkzeug<1.0.0',
+        'Jinja2',
+        'Werkzeug',
         'docutils',
         'pygments',
+        'feedgen',
+        'MarkupSafe',
         'six',
     ],
     classifiers=[

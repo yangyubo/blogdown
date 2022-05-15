@@ -14,7 +14,7 @@ from math import ceil
 
 import six
 
-from jinja2 import Markup
+from markupsafe import Markup
 
 
 @six.python_2_unicode_compatible

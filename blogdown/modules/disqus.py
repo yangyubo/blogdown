@@ -17,9 +17,10 @@
 """
 from __future__ import unicode_literals
 
-import jinja2
+from jinja2 import pass_context
+from markupsafe import Markup
 
-@jinja2.contextfunction
+@pass_context
 def get_disqus(context):
     var_shortname=context['builder'].config.root_get('modules.disqus.shortname', 'YOUR-DISQUS-SHORTNAME')
 
@@ -47,7 +48,7 @@ def get_disqus(context):
     if not context['config'].get('disqus', True):
         disqus_txt='' # "<h1>DISQUS DEFEATED</h1>"
         
-    return jinja2.Markup(disqus_txt)
+    return Markup(disqus_txt)
 
 
 def setup(builder):

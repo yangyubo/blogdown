@@ -15,9 +15,9 @@ from math import log
 import six
 urljoin = six.moves.urllib.parse.urljoin
 
-from jinja2 import contextfunction
+from jinja2 import pass_context
 
-from werkzeug.contrib.atom import AtomFeed
+from feedgen.feed import FeedGenerator
 
 from blogdown.signals import after_file_published, \
      before_build_finished
@@ -31,7 +31,7 @@ class Tag(object):
         self.size = 100 + log(count or 1) * 20
 
 
-@contextfunction
+@pass_context
 def get_tags(context, limit=50):
     tags = get_tag_summary(context['builder'])
     if limit:
@@ -81,17 +81,23 @@ def write_tag_feed(builder, tag):
     url = builder.config.root_get('canonical_url') or 'http://localhost/'
     name = builder.config.get('feed.name') or u'Recent Blog Posts'
     subtitle = builder.config.get('feed.subtitle') or u'Recent blog posts'
-    feed = AtomFeed(name,
-                    subtitle=subtitle,
-                    feed_url=urljoin(url, builder.link_to('blog_feed')),
-                    url=url)
+    feed_url = urljoin(url, builder.link_to('blog_feed'))
+    feed = FeedGenerator()
+    feed.id(feed_url)
+    feed.link(href=url)
+    feed.link(href=feed_url, rel='self')
+    feed.title(name)
+    feed.subtitle(subtitle)
     for entry in get_tagged_entries(builder, tag)[:10]:
-        feed.add(entry.title, six.text_type(entry.render_contents()),
-                 content_type='html', author=blog_author,
-                 url=urljoin(url, entry.slug),
-                 updated=entry.pub_date)
+        fe = feed.add_entry()
+        fe.id(urljoin(url, entry.slug))
+        fe.link(href=fe.id(), rel='self')
+        fe.title(entry.title)
+        fe.content(six.text_type(entry.render_contents()), type='html')
+        fe.author(name=blog_author)
+        fe.updated(entry.pub_date)
     with builder.open_link_file('tagfeed', tag=tag.name) as f:
-        f.write(feed.to_string() + '\n')
+        f.write(feed.atom_str().decode('utf-8') + '\n')
 
 
 def write_tag_page(builder, tag):

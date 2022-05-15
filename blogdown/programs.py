@@ -16,7 +16,8 @@ import yaml
 import shutil
 from datetime import datetime
 from weakref import ref
-from jinja2 import Markup
+from markupsafe import Markup
+
 
 class Program(object):
 
