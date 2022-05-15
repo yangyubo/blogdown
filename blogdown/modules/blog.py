@@ -8,15 +8,11 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
-from __future__ import unicode_literals
 
 from datetime import datetime, date
+from urllib.parse import urljoin
 
 from pytz import timezone
-
-import six
-urljoin = six.moves.urllib.parse.urljoin
 
 from jinja2 import pass_context
 
@@ -169,7 +165,7 @@ def write_feed(builder):
         fe.id(urljoin(url, entry.slug))
         fe.link(href=fe.id(), rel='self')
         fe.title(entry.title)
-        fe.content(six.text_type(entry.render_contents()), type='html')
+        fe.content(entry.render_contents(), type='html')
         fe.author(name=blog_author)
         fe.updated(entry.pub_date)
     with builder.open_link_file('blog_feed') as f:

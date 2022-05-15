@@ -8,15 +8,12 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import print_function
-from __future__ import unicode_literals
 import io
 import re
 import os
 import posixpath
 from fnmatch import fnmatch
-import six
-urlparse = six.moves.urllib.parse.urlparse
+from urllib.parse import urlparse
 
 from jinja2 import Environment, FileSystemLoader
 

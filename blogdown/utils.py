@@ -8,16 +8,12 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import unicode_literals
 
 from math import ceil
-
-import six
 
 from markupsafe import Markup
 
 
-@six.python_2_unicode_compatible
 class Pagination(object):
     """Internal helper class for paginations"""
 
@@ -91,4 +87,4 @@ class Pagination(object):
         })
 
     def __html__(self):
-        return Markup(six.text_type(self))
+        return Markup(str(self))

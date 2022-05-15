@@ -8,9 +8,6 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
-from __future__ import print_function
-from __future__ import unicode_literals
 import sys
 import os
 from blogdown.config import Config

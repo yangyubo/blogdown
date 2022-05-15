@@ -8,8 +8,6 @@
     :copyright: (c) 2015 by Thomas Gläßle
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import unicode_literals
-
 import os
 from importlib import import_module
 from pkg_resources import iter_entry_points

@@ -9,18 +9,12 @@
     :license: BSD, see LICENSE for more details.
 """
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import os
 import sys
 import posixpath
+import urllib.parse
 
-import six
-
-HTTPServer = six.moves.BaseHTTPServer.HTTPServer
-SimpleHTTPRequestHandler = six.moves.SimpleHTTPServer.SimpleHTTPRequestHandler
-urllib = six.moves.urllib
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 
 class SimpleRequestHandler(SimpleHTTPRequestHandler):

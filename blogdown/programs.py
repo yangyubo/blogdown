@@ -9,8 +9,6 @@
                 (c) 2012 by Brant Young.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import with_statement
-from __future__ import unicode_literals
 import os
 import yaml
 import shutil

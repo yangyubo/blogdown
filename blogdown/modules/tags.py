@@ -8,15 +8,10 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import unicode_literals
-
 from math import log
-
-import six
-urljoin = six.moves.urllib.parse.urljoin
+from urllib.parse import urljoin
 
 from jinja2 import pass_context
-
 from feedgen.feed import FeedGenerator
 
 from blogdown.signals import after_file_published, \
@@ -93,7 +88,7 @@ def write_tag_feed(builder, tag):
         fe.id(urljoin(url, entry.slug))
         fe.link(href=fe.id(), rel='self')
         fe.title(entry.title)
-        fe.content(six.text_type(entry.render_contents()), type='html')
+        fe.content(entry.render_contents(), type='html')
         fe.author(name=blog_author)
         fe.updated(entry.pub_date)
     with builder.open_link_file('tagfeed', tag=tag.name) as f:

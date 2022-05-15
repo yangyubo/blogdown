@@ -15,8 +15,6 @@
     :copyright: (c) 2012 by Martin Andrews.
     :license: BSD, see LICENSE for more details.
 """
-from __future__ import unicode_literals
-
 from jinja2 import pass_context
 from markupsafe import Markup
 
