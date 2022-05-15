@@ -1,5 +1,19 @@
+BlogDown
+========
+
 `BlogDown <https://github.com/brantyoung/blogdown/>`_ is a simple static blog generator,
 forked from `Armin Ronacher <http://lucumr.pocoo.org/>`_'s `rstblog <https://github.com/mitsuhiko/rstblog/>`_.
+
+Project Status
+--------------
+
+The project is currently not well maintained and hasn't been upgraded to newer
+versions of its dependencies.
+
+Users are recommended to consider alternative static site generators.
+
+Features
+--------
 
 BlogDown support both reStructuredText and Markdown markup.
 
