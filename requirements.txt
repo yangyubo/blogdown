@@ -1,0 +1,11 @@
+Babel==2.9.0
+blinker==1.4
+docutils==0.16
+Jinja2==2.11.2
+Markdown==3.3.3
+MarkupSafe==1.1.1
+Pygments==2.7.3
+pytz==2020.4
+PyYAML==5.3.1
+six==1.15.0
+Werkzeug==0.16.1
