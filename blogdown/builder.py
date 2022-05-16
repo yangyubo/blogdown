@@ -22,23 +22,22 @@ from babel import Locale, dates
 from werkzeug.routing import Map, Rule
 from werkzeug.urls import url_unquote
 
-from blogdown.signals import before_file_processed, \
-     before_template_rendered, before_build_finished, \
-     before_file_built, after_file_prepared, \
-     after_file_published
+from blogdown.signals import (
+    before_file_processed,
+    before_template_rendered,
+    before_build_finished,
+    before_file_built,
+    after_file_prepared,
+    after_file_published,
+)
 from blogdown.programs import MDProgram, RSTProgram, CopyProgram
 from blogdown import plugin
 
 
-
-OUTPUT_FOLDER = '_build'
-builtin_programs = {
-    'md':      MDProgram,
-    'rst':      RSTProgram,
-    'copy':     CopyProgram
-}
-builtin_templates = os.path.join(os.path.dirname(__file__), 'templates')
-url_parts_re = re.compile(r'\$(\w+|{[^}]+})')
+OUTPUT_FOLDER = "_build"
+builtin_programs = {"md": MDProgram, "rst": RSTProgram, "copy": CopyProgram}
+builtin_templates = os.path.join(os.path.dirname(__file__), "templates")
+url_parts_re = re.compile(r"\$(\w+|{[^}]+})")
 
 
 class Context(object):
@@ -52,14 +51,16 @@ class Context(object):
         self.pub_date = None
         self.source_filename = source_filename
         self.links = []
-        self.program_name = self.config.get('program')
+        self.program_name = self.config.get("program")
         if self.program_name is None:
             self.program_name = self.builder.guess_program(
-                config, source_filename)
+                config, source_filename
+            )
         self.program = self.builder.programs[self.program_name](self)
         self.destination_filename = os.path.join(
-            self.builder.prefix_path.lstrip('/'),
-            self.program.get_desired_filename())
+            self.builder.prefix_path.lstrip("/"),
+            self.program.get_desired_filename(),
+        )
         if prepare:
             self.program.prepare()
             after_file_prepared.send(self)
@@ -72,27 +73,31 @@ class Context(object):
 
     @property
     def public(self):
-        return self.config.get('public', True)
+        return self.config.get("public", True)
 
     @property
     def slug(self):
         directory, filename = os.path.split(self.source_filename)
         basename, ext = os.path.splitext(filename)
-        if basename == 'index':
-            return posixpath.join(directory, basename).rstrip('/').replace('\\', '/')
-        return posixpath.join(directory, basename).replace('\\', '/')
+        if basename == "index":
+            return (
+                posixpath.join(directory, basename)
+                .rstrip("/")
+                .replace("\\", "/")
+            )
+        return posixpath.join(directory, basename).replace("\\", "/")
 
     def make_destination_folder(self):
         folder = self.destination_folder
         if not os.path.isdir(folder):
             os.makedirs(folder)
 
-    def open_source_file(self, mode='r'):
-        return io.open(self.full_source_filename, mode, encoding='utf-8')
+    def open_source_file(self, mode="r"):
+        return io.open(self.full_source_filename, mode, encoding="utf-8")
 
-    def open_destination_file(self, mode='w'):
+    def open_destination_file(self, mode="w"):
         self.make_destination_folder()
-        return io.open(self.full_destination_filename, mode, encoding='utf-8')
+        return io.open(self.full_destination_filename, mode, encoding="utf-8")
 
     @property
     def destination_folder(self):
@@ -100,9 +105,11 @@ class Context(object):
 
     @property
     def full_destination_filename(self):
-        return os.path.join(self.builder.project_folder,
-                            self.config.get('output_folder') or OUTPUT_FOLDER,
-                            self.destination_filename)
+        return os.path.join(
+            self.builder.project_folder,
+            self.config.get("output_folder") or OUTPUT_FOLDER,
+            self.destination_filename,
+        )
 
     @property
     def full_source_filename(self):
@@ -118,11 +125,11 @@ class Context(object):
 
     def get_default_template_context(self):
         return {
-            'source_filename':  self.source_filename,
-            'program_name':     self.program_name,
-            'links':            self.links,
-            'ctx':              self,
-            'config':           self.config
+            "source_filename": self.source_filename,
+            "program_name": self.program_name,
+            "links": self.links,
+            "ctx": self,
+            "config": self.config,
         }
 
     def render_template(self, template_name, context=None):
@@ -136,19 +143,21 @@ class Context(object):
 
     def render_summary(self):
         if not self.summary:
-            return u''
+            return ""
 
         return self.program.render(self.summary)
 
     def add_stylesheet(self, href, type=None, media=None):
         if type is None:
-            type = 'text/css'
-        self.links.append({
-            'href':     self.builder.get_static_url(href),
-            'type':     type,
-            'media':    media,
-            'rel':      'stylesheet'
-        })
+            type = "text/css"
+        self.links.append(
+            {
+                "href": self.builder.get_static_url(href),
+                "type": type,
+                "media": media,
+                "rel": "stylesheet",
+            }
+        )
 
     def run(self):
         before_file_processed.send(self)
@@ -165,13 +174,17 @@ class BuildError(ValueError):
 
 
 class Builder(object):
-    default_ignores = ('.*', '_*', 'config.yml', 'Makefile', 'README.rst', '*.conf', )
-    default_programs = {
-        '*.rst':    'rst',
-        '*.md':    'md'
-    }
-    default_template_path = '_templates'
-    default_static_folder = 'static'
+    default_ignores = (
+        ".*",
+        "_*",
+        "config.yml",
+        "Makefile",
+        "README.rst",
+        "*.conf",
+    )
+    default_programs = {"*.rst": "rst", "*.md": "md"}
+    default_template_path = "_templates"
+    default_static_folder = "static"
 
     def __init__(self, project_folder, config):
         self.project_folder = os.path.abspath(project_folder)
@@ -180,16 +193,19 @@ class Builder(object):
         self.modules = []
         self.storage = {}
         self.url_map = Map()
-        parsed = urlparse(self.config.root_get('canonical_url'))
+        parsed = urlparse(self.config.root_get("canonical_url"))
         self.prefix_path = parsed.path
-        self.url_adapter = self.url_map.bind('dummy.invalid',
-            script_name=self.prefix_path)
-        self.register_url('page', '/<path:slug>')
+        self.url_adapter = self.url_map.bind(
+            "dummy.invalid", script_name=self.prefix_path
+        )
+        self.register_url("page", "/<path:slug>")
 
-        template_path = os.path.join(self.project_folder,
-            self.config.root_get('template_path') or
-                self.default_template_path)
-        self.locale = Locale(self.config.root_get('locale') or 'en')
+        template_path = os.path.join(
+            self.project_folder,
+            self.config.root_get("template_path")
+            or self.default_template_path,
+        )
+        self.locale = Locale(self.config.root_get("locale") or "en")
         self.jinja_env = Environment(
             loader=FileSystemLoader([template_path, builtin_templates]),
         )
@@ -197,21 +213,27 @@ class Builder(object):
             link_to=self.link_to,
             format_datetime=self.format_datetime,
             format_date=self.format_date,
-            format_time=self.format_time
+            format_time=self.format_time,
         )
 
-        self.static_folder = self.config.root_get('static_folder') or \
-                             self.default_static_folder
+        self.static_folder = (
+            self.config.root_get("static_folder") or self.default_static_folder
+        )
 
         # The order is chosen on purpose to allow overriding:
         # local configuration > 3rdparty entrypoints > blogdown default
         plugin_loader = plugin.ChainLoader(
-            [plugin.PathLoader(path)
-             for path in self.config.get('plugin_folders', ['_plugins'])] +
-            [plugin.EntryPointLoader('blogdown.plugin'),
-             plugin.PackageLoader('blogdown.modules')])
+            [
+                plugin.PathLoader(path)
+                for path in self.config.get("plugin_folders", ["_plugins"])
+            ]
+            + [
+                plugin.EntryPointLoader("blogdown.plugin"),
+                plugin.PackageLoader("blogdown.modules"),
+            ]
+        )
 
-        for module in self.config.root_get('active_modules') or []:
+        for module in self.config.root_get("active_modules") or []:
             implementations = iter(plugin_loader(module))
             try:
                 plugin_instance = next(implementations)
@@ -223,51 +245,54 @@ class Builder(object):
 
     @property
     def default_output_folder(self):
-        return os.path.join(self.project_folder,
-                            self.config.root_get('output_folder')
-                            or OUTPUT_FOLDER)
+        return os.path.join(
+            self.project_folder,
+            self.config.root_get("output_folder") or OUTPUT_FOLDER,
+        )
 
     def link_to(self, _key, **values):
         return self.url_adapter.build(_key, values)
 
     def get_link_filename(self, _key, **values):
-        link = url_unquote(self.link_to(_key, **values).lstrip('/'))
-        if not link or link.endswith('/'):
-            link += 'index.html'
+        link = url_unquote(self.link_to(_key, **values).lstrip("/"))
+        if not link or link.endswith("/"):
+            link += "index.html"
         return os.path.join(self.default_output_folder, link)
 
-    def open_link_file(self, _key, mode='w', **values):
+    def open_link_file(self, _key, mode="w", **values):
         filename = self.get_link_filename(_key, **values)
         folder = os.path.dirname(filename)
         if not os.path.isdir(folder):
             os.makedirs(folder)
-        return io.open(filename, mode, encoding='utf-8')
+        return io.open(filename, mode, encoding="utf-8")
 
-    def register_url(self, key, rule=None, config_key=None,
-                     config_default=None, **extra):
+    def register_url(
+        self, key, rule=None, config_key=None, config_default=None, **extra
+    ):
         if config_key is not None:
             rule = self.config.root_get(config_key, config_default)
         self.url_map.add(Rule(rule, endpoint=key, **extra))
 
     def get_full_static_filename(self, filename):
-        return os.path.join(self.default_output_folder,
-                            self.static_folder, filename)
+        return os.path.join(
+            self.default_output_folder, self.static_folder, filename
+        )
 
     def get_static_url(self, filename):
-        return '/' + posixpath.join(self.static_folder, filename)
+        return "/" + posixpath.join(self.static_folder, filename)
 
-    def open_static_file(self, filename, mode='w'):
+    def open_static_file(self, filename, mode="w"):
         full_filename = self.get_full_static_filename(filename)
         folder = os.path.dirname(full_filename)
         if not os.path.isdir(folder):
             os.makedirs(folder)
-        return io.open(full_filename, mode, encoding='utf-8')
+        return io.open(full_filename, mode, encoding="utf-8")
 
     def get_storage(self, module):
         return self.storage.setdefault(module, {})
 
     def filter_files(self, files, config):
-        patterns = config.merged_get('ignore_files')
+        patterns = config.merged_get("ignore_files")
         if patterns is None:
             patterns = self.default_ignores
 
@@ -281,28 +306,28 @@ class Builder(object):
         return result
 
     def guess_program(self, config, filename):
-        mapping = config.list_entries('programs') or self.default_programs
+        mapping = config.list_entries("programs") or self.default_programs
         for pattern, program_name in mapping.items():
             if fnmatch(filename, pattern):
                 return program_name
-        return 'copy'
+        return "copy"
 
     def render_template(self, template_name, context=None):
         if context is None:
             context = {}
-        context['builder'] = self
-        context.setdefault('config', self.config)
+        context["builder"] = self
+        context.setdefault("config", self.config)
         tmpl = self.jinja_env.get_template(template_name)
         before_template_rendered.send(tmpl, context=context)
         return tmpl.render(context)
 
-    def format_datetime(self, datetime=None, format='medium'):
+    def format_datetime(self, datetime=None, format="medium"):
         return dates.format_datetime(datetime, format, locale=self.locale)
 
-    def format_time(self, time=None, format='medium'):
+    def format_time(self, time=None, format="medium"):
         return dates.format_time(time, format, locale=self.locale)
 
-    def format_date(self, date=None, format='medium'):
+    def format_date(self, date=None, format="medium"):
         return dates.format_date(date, format, locale=self.locale)
 
     def iter_contexts(self, prepare=True):
@@ -310,7 +335,7 @@ class Builder(object):
         cutoff = len(self.project_folder) + 1
         for dirpath, dirnames, filenames in os.walk(self.project_folder):
             local_config = last_config
-            local_config_filename = os.path.join(dirpath, 'config.yml')
+            local_config_filename = os.path.join(dirpath, "config.yml")
             if os.path.isfile(local_config_filename):
                 with io.open(local_config_filename) as f:
                     local_config = last_config.add_from_file(f)
@@ -319,8 +344,12 @@ class Builder(object):
             filenames = self.filter_files(filenames, local_config)
 
             for filename in filenames:
-                yield Context(self, local_config, os.path.join(
-                    dirpath[cutoff:], filename), prepare)
+                yield Context(
+                    self,
+                    local_config,
+                    os.path.join(dirpath[cutoff:], filename),
+                    prepare,
+                )
 
     def anything_needs_build(self):
         for context in self.iter_contexts(prepare=False):
@@ -334,15 +363,16 @@ class Builder(object):
 
         for context in contexts:
             if context.needs_build:
-                key = context.is_new and 'A' or 'U'
+                key = context.is_new and "A" or "U"
                 context.run()
                 print(key, context.source_filename)
 
         before_build_finished.send(self)
 
-    def debug_serve(self, host='127.0.0.1', port=5000):
+    def debug_serve(self, host="127.0.0.1", port=5000):
         from blogdown.server import Server
-        print('Serving on http://%s:%d/' % (host, port))
+
+        print("Serving on http://%s:%d/" % (host, port))
         try:
             Server(host, port, self).serve_forever()
         except KeyboardInterrupt:

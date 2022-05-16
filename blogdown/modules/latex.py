@@ -20,7 +20,7 @@ from markupsafe import escape
 from docutils import nodes, utils
 from docutils.parsers.rst import Directive, directives, roles
 
-DOC_WRAPPER = r'''
+DOC_WRAPPER = r"""
 \documentclass[12pt]{article}
 \usepackage[utf8x]{inputenc}
 \usepackage{amsmath}
@@ -36,16 +36,16 @@ DOC_WRAPPER = r'''
 %s
 \end{preview}
 \end{document}
-'''
+"""
 
-_depth_re = re.compile(r'\[\d+ depth=(-?\d+)\]')
+_depth_re = re.compile(r"\[\d+ depth=(-?\d+)\]")
 
 
 def wrap_displaymath(math):
     ret = []
-    for part in math.split('\n\n'):
-        ret.append('\\begin{split}%s\\end{split}\\notag' % part)
-    return '\\begin{gather}\n' + '\\\\'.join(ret) + '\n\\end{gather}'
+    for part in math.split("\n\n"):
+        ret.append("\\begin{split}%s\\end{split}\\notag" % part)
+    return "\\begin{gather}\n" + "\\\\".join(ret) + "\n\\end{gather}"
 
 
 def find_depth(stdout):
@@ -56,7 +56,7 @@ def find_depth(stdout):
 
 
 def render_math(context, math):
-    relname = u'_math/%s.png' % sha1(math).hexdigest()
+    relname = "_math/%s.png" % sha1(math).hexdigest()
     full_filename = context.builder.get_full_static_filename(relname)
     url = context.builder.get_static_url(relname)
 
@@ -70,14 +70,14 @@ def render_math(context, math):
     depth = None
     tempdir = tempfile.mkdtemp()
     try:
-        tf = open(path.join(tempdir, 'math.tex'), 'w')
+        tf = open(path.join(tempdir, "math.tex"), "w")
         tf.write(latex)
         tf.close()
 
         # build latex command; old versions of latex don't have the
         # --output-directory option, so we have to manually chdir to the
         # temp dir to run it.
-        ltx_args = ['latex', '--interaction=nonstopmode', 'math.tex']
+        ltx_args = ["latex", "--interaction=nonstopmode", "math.tex"]
 
         curdir = getcwd()
         chdir(tempdir)
@@ -89,22 +89,43 @@ def render_math(context, math):
             chdir(curdir)
 
         if p.returncode != 0:
-            raise Exception('latex exited with error:\n[stderr]\n%s\n'
-                            '[stdout]\n%s' % (stderr, stdout))
+            raise Exception(
+                "latex exited with error:\n[stderr]\n%s\n"
+                "[stdout]\n%s" % (stderr, stdout)
+            )
 
         directory = os.path.dirname(full_filename)
         if not os.path.isdir(directory):
             os.makedirs(directory)
-        dvipng_args = ['dvipng', '-o', full_filename, '-T', 'tight', '-z9',
-                       '-D', str(int(context.builder.config.root_get(
-                            'modules.latex.font_size', 16) * 72.27 / 10)),
-                       '-bg', 'Transparent',
-                       '--depth', os.path.join(tempdir, 'math.dvi')]
+        dvipng_args = [
+            "dvipng",
+            "-o",
+            full_filename,
+            "-T",
+            "tight",
+            "-z9",
+            "-D",
+            str(
+                int(
+                    context.builder.config.root_get(
+                        "modules.latex.font_size", 16
+                    )
+                    * 72.27
+                    / 10
+                )
+            ),
+            "-bg",
+            "Transparent",
+            "--depth",
+            os.path.join(tempdir, "math.dvi"),
+        ]
         p = Popen(dvipng_args, stdout=PIPE, stderr=PIPE)
         stdout, stderr = p.communicate()
         if p.returncode != 0:
-            raise Exception('dvipng exited with error:\n[stderr]\n%s\n'
-                            '[stdout]\n%s' % (stderr, stdout))
+            raise Exception(
+                "dvipng exited with error:\n[stderr]\n%s\n"
+                "[stdout]\n%s" % (stderr, stdout)
+            )
         depth = find_depth(stdout)
     finally:
         try:
@@ -120,8 +141,8 @@ def make_imgtag(url, depth, latex):
     bits = ['<img src="%s" alt="%s"' % (escape(url), escape(latex))]
     if depth is not None:
         bits.append(' style="vertical-align: %dpx"' % -depth)
-    bits.append('>')
-    return ''.join(bits)
+    bits.append(">")
+    return "".join(bits)
 
 
 class MathDirective(Directive):
@@ -129,28 +150,37 @@ class MathDirective(Directive):
     required_arguments = 0
     optional_arguments = 1
     final_argument_whitespace = True
-    option_spec = {
-        'label': directives.unchanged,
-        'nowrap': directives.flag
-    }
+    option_spec = {"label": directives.unchanged, "nowrap": directives.flag}
 
     def run(self):
-        latex = '\n'.join(self.content)
+        latex = "\n".join(self.content)
         if self.arguments and self.arguments[0]:
-            latex = self.arguments[0] + '\n\n' + latex
-        url, _ = render_math(self.state.document.settings.rstblog_context,
-                             latex)
-        return [nodes.raw('', u'<blockquote class="math">%s</blockquote>'
-                          % make_imgtag(url, None, latex), format='html')]
+            latex = self.arguments[0] + "\n\n" + latex
+        url, _ = render_math(
+            self.state.document.settings.rstblog_context, latex
+        )
+        return [
+            nodes.raw(
+                "",
+                '<blockquote class="math">%s</blockquote>'
+                % make_imgtag(url, None, latex),
+                format="html",
+            )
+        ]
 
 
 def math_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
     latex = utils.unescape(text, restore_backslashes=True)
     url, depth = render_math(inliner.document.settings.rstblog_context, latex)
-    return [nodes.raw('', u'<span class="math">%s</span>' %
-                      make_imgtag(url, depth, latex), format='html')], []
+    return [
+        nodes.raw(
+            "",
+            '<span class="math">%s</span>' % make_imgtag(url, depth, latex),
+            format="html",
+        )
+    ], []
 
 
 def setup(builder):
-    directives.register_directive('math', MathDirective)
-    roles.register_local_role('math', math_role)
+    directives.register_directive("math", MathDirective)
+    roles.register_local_role("math", math_role)

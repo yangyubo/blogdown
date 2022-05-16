@@ -18,15 +18,18 @@
 from jinja2 import pass_context
 from markupsafe import Markup
 
+
 @pass_context
 def get_disqus(context):
-    var_shortname=context['builder'].config.root_get('modules.disqus.shortname', 'YOUR-DISQUS-SHORTNAME')
+    var_shortname = context["builder"].config.root_get(
+        "modules.disqus.shortname", "YOUR-DISQUS-SHORTNAME"
+    )
 
-    var_developer=''
-    if context['builder'].config.root_get('modules.disqus.developer', False):
-        var_developer='var disqus_developer = 1;'
-    
-    disqus_txt="""
+    var_developer = ""
+    if context["builder"].config.root_get("modules.disqus.developer", False):
+        var_developer = "var disqus_developer = 1;"
+
+    disqus_txt = """
 <div id="disqus_thread"></div>
 <script type="text/javascript">
     var disqus_shortname = '%s'; // required: replace example with your forum shortname
@@ -41,13 +44,16 @@ def get_disqus(context):
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
-""" % ( var_shortname, var_developer, )
+""" % (
+        var_shortname,
+        var_developer,
+    )
 
-    if not context['config'].get('disqus', True):
-        disqus_txt='' # "<h1>DISQUS DEFEATED</h1>"
-        
+    if not context["config"].get("disqus", True):
+        disqus_txt = ""  # "<h1>DISQUS DEFEATED</h1>"
+
     return Markup(disqus_txt)
 
 
 def setup(builder):
-    builder.jinja_env.globals['get_disqus'] = get_disqus
+    builder.jinja_env.globals["get_disqus"] = get_disqus
