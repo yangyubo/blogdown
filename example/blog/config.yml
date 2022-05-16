@@ -1,0 +1,22 @@
+---
+active_modules: [pygments, tags, blog, latex]
+timezone: Europe/Berlin
+author: Mr. Anonymious
+blogtitle: "Not a serious Thread"
+canonical_url: https://example.com
+feed:
+  name: Feed em to the wolves
+  subtitle: the bananas
+
+modules:
+  pygments:
+    style: monokai
+
+ignore_files:
+  - '.*'
+  - '_*'
+  - '*.pyc'
+  - '*.aux'
+  - '*.log'
+  - 'LICENSE.rst'
+  - 'config.yml'

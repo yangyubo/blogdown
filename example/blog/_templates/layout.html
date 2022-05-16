@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+    {% block htmlhead %}
+      <title>{% block title %}{% endblock %}</title>
+      <link rel="stylesheet" href="/static/style.css" type="text/css">
+      <link rel="alternate"  href="/feed.atom" type="application/atom+xml" title="Feed">
+      {%- for link in links %}
+      <link rel="{{ link.rel }}" href="{{ link.href }}"{%
+        if link.media %} media="{{ link.media }}"{% endif %} type="{{ link.type }}">
+      {%- endfor -%}
+    {% endblock %}
+  </head>
+  <body>
+    <header>
+      <h1 class="blogtitle">{{ config.blogtitle }}</h1>
+      <nav>
+        <a href="/">recent</a>
+        <a href="/archive">archive</a>
+        <a href="/tags">tags</a>
+        <a href="/about/">about</a>
+      </nav>
+    </header>
+    <main>
+      {% block body %}{% endblock %}
+    </main>
+  </body>
+</html>

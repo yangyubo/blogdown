@@ -28,3 +28,5 @@ jobs:
 
       - run: twine check dist/*
       - run: flake8
+
+      - run: python test.py
