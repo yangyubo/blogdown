@@ -71,9 +71,9 @@ class Pagination(object):
         return self.page + 1
 
     def get_slice(self):
-        return self.entries[
-            (self.page - 1) * self.per_page : self.page * self.per_page
-        ]
+        start = self.per_page * (self.page - 1)
+        stop = self.per_page * self.page
+        return self.entries[start:stop]
 
     def iter_pages(
         self, left_edge=2, left_current=2, right_current=5, right_edge=2

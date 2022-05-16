@@ -100,7 +100,7 @@ def parse_header_lines(lines):
 
     :param lines: should be an iterator or file-like object.
     """
-    lines = iter_header_lines(l.rstrip("\n") for l in lines)
+    lines = iter_header_lines(line.rstrip("\n") for line in lines)
     return yaml.unsafe_load("\n".join(lines))
 
 
@@ -222,7 +222,8 @@ class MDProgram(TemplatedProgram):
                 "abbr",
                 "meta",
                 "headerid",
-                "codehilite(pygments_style=tango, css_class=syntax, guess_lang=True)",
+                "codehilite(pygments_style=tango,"
+                + "css_class=syntax,guess_lang=True)",
             ],
         )
 
