@@ -18,17 +18,16 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - run: pip install setuptools wheel
-      - run: python setup.py sdist bdist_wheel
-
-      - run: pip install -r requirements.txt
-      - run: pip install dist/*.whl
-
-      - run: pip install twine flake8
-
-      - run: twine check dist/*
+      - run: pip install flake8
       - run: flake8
 
+      - run: pip install build
+      - run: python -m build .
+
+      - run: pip install twine
+      - run: twine check dist/*
+
+      - run: pip install dist/*.whl
       - run: python test.py
 
       - name: Publish PyPI package
