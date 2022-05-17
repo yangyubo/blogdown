@@ -12,7 +12,7 @@ setup(
     license="BSD License",
     url="https://github.com/blogdown/blogdown/",
     entry_points={
-        "console_scripts": ["run-blogdown = blogdown.cli:main"],
+        "console_scripts": ["blogdown = blogdown.cli:main"],
     },
     install_requires=[
         "PyYAML",

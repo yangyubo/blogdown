@@ -18,7 +18,7 @@ class TestExample(unittest.TestCase):
                 os.path.join(temp_dir, '_build'),
                 ignore_errors=True)
 
-            command = ['run-blogdown', 'build']
+            command = ['blogdown', 'build']
             stdout = subprocess.check_output(command, cwd=temp_dir)
             self.assertCountEqual(stdout.splitlines(), [
                 b'A about.rst',
